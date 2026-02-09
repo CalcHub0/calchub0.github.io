@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Side Hustle Profit Calculator - Compare Side Hustles ROI</title>
+    <meta name="description" content="Free side hustle calculator to compare different side hustles and find the best hourly pay. Calculate ROI and profitability.">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #0a0a0a; --surface: #161616; --border: #2a2a2a; --text: #fff; --dim: #a0a0a0; --primary: #00ff88; --accent: #ff0080; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { padding: 20px 0; margin-bottom: 30px; }
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+        .ad-banner { background: var(--surface); border: 2px dashed var(--border); border-radius: 12px; padding: 30px 20px; text-align: center; color: var(--dim); margin: 20px 0; min-height: 90px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .calc-header { margin: 40px 0 30px; }
+        .calc-title { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.2; }
+        .calc-subtitle { color: var(--dim); font-size: 1.1rem; }
+        .calc-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px; }
+        .input-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        input { width: 100%; padding: 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1.1rem; font-family: 'Space Grotesk', monospace; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1); }
+        .input-wrapper { position: relative; }
+        .prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--dim); font-size: 1.1rem; font-family: 'Space Grotesk', monospace; }
+        input.with-prefix { padding-left: 36px; }
+        .calc-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--primary), #00cc6a); border: none; border-radius: 8px; color: var(--bg); font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: 'Inter', sans-serif; transition: all 0.3s; }
+        .calc-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3); }
+        .add-btn { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 20px; font-family: 'Inter', sans-serif; }
+        .add-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .results { margin-top: 40px; padding: 40px; background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(255,0,128,0.1)); border: 1px solid var(--border); border-radius: 16px; }
+        .result-main { text-align: center; margin-bottom: 30px; }
+        .result-label { color: var(--dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+        .result-value { font-family: 'Space Grotesk', monospace; font-size: 3rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
+        .result-item { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .result-item-label { color: var(--dim); font-size: 0.85rem; margin-bottom: 8px; }
+        .result-item-value { font-family: 'Space Grotesk', monospace; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .advice-box { background: rgba(0,0,0,0.3); border-left: 3px solid var(--primary); padding: 20px; margin-top: 30px; border-radius: 8px; }
+        .advice-box h3 { color: var(--primary); font-size: 1.1rem; margin-bottom: 10px; }
+        .advice-box p { color: var(--dim); line-height: 1.7; }
+        .related { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .related h3 { color: var(--text); margin-bottom: 20px; font-size: 1.3rem; }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .related-link { display: block; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: var(--text); transition: all 0.3s; }
+        .related-link:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .related-link span { display: block; font-size: 1.5rem; margin-bottom: 8px; }
+        footer { text-align: center; padding: 40px 20px; color: var(--dim); font-size: 0.9rem; margin-top: 60px; }
+        .hustle-section { margin-bottom: 40px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+        .hustle-section h3 { color: var(--primary); margin-bottom: 20px; font-size: 1.1rem; }
+        @media (max-width: 768px) { .calc-title { font-size: 2rem; } .result-value { font-size: 2rem; } .calc-content { padding: 25px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><a href="index.html" class="logo">← CalcHub</a></header>
+        <div class="ad-banner">📢 AD SPACE (728x90) - Add Google AdSense or Affiliate Links Here</div>
+        <div id="root"></div>
+        <div class="ad-banner">💡 POST-CALCULATOR AD (728x90) - Perfect for Gig Platform Affiliate Links (Upwork, Fiverr)</div>
+        <div class="related">
+            <h3>Related Calculators</h3>
+            <div class="related-grid">
+                <a href="hourly-wage-calculator.html" class="related-link"><span>⏰</span>True Hourly Wage Calculator</a>
+                <a href="quit-job-calculator.html" class="related-link"><span>🏃</span>Quit Job Calculator</a>
+                <a href="salary-increase-calculator.html" class="related-link"><span>💼</span>Salary Increase Calculator</a>
+            </div>
+        </div>
+        <footer><p>All calculators are for educational purposes. Not financial advice.</p><p>© 2026 CalcHub</p></footer>
+    </div>
+    <script type="text/babel">
+        const { useState } = React;
+        function SideHustleCalculator() {
+            const [hustles, setHustles] = useState([{ name: '', income: '', hours: '', cost: '' }]);
+            const [results, setResults] = useState(null);
+            const addHustle = () => setHustles([...hustles, { name: '', income: '', hours: '', cost: '' }]);
+            const updateHustle = (idx, field, value) => { const u = [...hustles]; u[idx][field] = value; setHustles(u); };
+            const calc = () => {
+                const analyzed = hustles.filter(h => h.income && h.hours).map(h => {
+                    const monthlyHours = parseFloat(h.hours) * 4.33;
+                    const hourlyRate = parseFloat(h.income) / monthlyHours;
+                    return { name: h.name || 'Unnamed Hustle', income: parseFloat(h.income), hourlyRate, hours: parseFloat(h.hours), cost: parseFloat(h.cost) || 0 };
+                }).sort((a, b) => b.hourlyRate - a.hourlyRate);
+                setResults(analyzed);
+            };
+            return (<>
+                <div className="calc-header">
+                    <h1 className="calc-title">🚀 Side Hustle Profit Calculator</h1>
+                    <p className="calc-subtitle">Compare different side hustles to find the best hourly pay</p>
+                </div>
+                <div className="calc-content">
+                    {hustles.map((h, idx) => (<div key={idx} className="hustle-section">
+                        <h3>Side Hustle #{idx + 1}</h3>
+                        <div className="input-group"><label>Name (e.g., DoorDash, Freelance Writing)</label><input value={h.name} onChange={e => updateHustle(idx, 'name', e.target.value)} placeholder="Side hustle name" /></div>
+                        <div className="input-group"><label>Expected Monthly Income</label><div className="input-wrapper"><span className="prefix">$</span><input type="number" className="with-prefix" value={h.income} onChange={e => updateHustle(idx, 'income', e.target.value)} placeholder="1500" /></div></div>
+                        <div className="input-group"><label>Hours Per Week</label><input type="number" value={h.hours} onChange={e => updateHustle(idx, 'hours', e.target.value)} placeholder="15" /></div>
+                        <div className="input-group"><label>Startup Cost (optional)</label><div className="input-wrapper"><span className="prefix">$</span><input type="number" className="with-prefix" value={h.cost} onChange={e => updateHustle(idx, 'cost', e.target.value)} placeholder="0" /></div></div>
+                    </div>))}
+                    <button className="add-btn" onClick={addHustle}>+ Add Another Hustle to Compare</button>
+                    <button className="calc-btn" onClick={calc}>Compare Side Hustles</button>
+                    {results && results.length > 0 && <div className="results">
+                        <div className="result-main"><div className="result-label">Best Hourly Rate</div><div className="result-value">${results[0].hourlyRate.toFixed(2)}/hr</div><div className="result-label">{results[0].name}</div></div>
+                        <div style={{marginTop:'30px'}}>
+                            <h3 style={{color:'var(--text)', marginBottom:'20px'}}>Rankings</h3>
+                            {results.map((r, i) => (<div key={i} className="result-item">
+                                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'10px'}}>
+                                    <div>
+                                        <div style={{fontSize:'1.2rem', fontWeight:'700'}}>#{i+1} {r.name}</div>
+                                        <div style={{color:'var(--dim)', fontSize:'0.9rem', marginTop:'5px'}}>${r.income}/mo • {r.hours}hrs/week{r.cost > 0 && ` • $${r.cost} startup`}</div>
+                                    </div>
+                                    <div style={{textAlign:'right'}}><div className="result-item-value" style={{fontSize:'1.3rem'}}>${r.hourlyRate.toFixed(2)}/hr</div></div>
+                                </div>
+                            </div>))}
+                        </div>
+                        <div className="advice-box"><h3>💡 Pro Tip</h3><p>The best side hustle isn't always the highest hourly rate - consider growth potential, skill building, and which one you'll actually stick with long-term.</p></div>
+                    </div>}
+                </div>
+            </>);
+        }
+        ReactDOM.render(<SideHustleCalculator />, document.getElementById('root'));
+    </script>
+</body>
+</html>
