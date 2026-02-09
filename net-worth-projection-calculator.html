@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Net Worth Projection Calculator - Free Wealth Calculator</title>
+    <meta name="description" content="Calculate your future net worth with our free compound interest calculator. See how much wealth you'll build over time with investments and savings.">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #0a0a0a; --surface: #161616; --border: #2a2a2a; --text: #fff; --dim: #a0a0a0; --primary: #00ff88; --accent: #ff0080; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { padding: 20px 0; margin-bottom: 30px; }
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+        .ad-banner { background: var(--surface); border: 2px dashed var(--border); border-radius: 12px; padding: 30px 20px; text-align: center; color: var(--dim); margin: 20px 0; min-height: 90px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .calc-header { margin: 40px 0 30px; }
+        .calc-title { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; line-height: 1.2; }
+        .calc-subtitle { color: var(--dim); font-size: 1.1rem; }
+        .calc-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px; }
+        .input-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        input { width: 100%; padding: 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1.1rem; font-family: 'Space Grotesk', monospace; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1); }
+        .input-wrapper { position: relative; }
+        .prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--dim); font-size: 1.1rem; font-family: 'Space Grotesk', monospace; }
+        input.with-prefix { padding-left: 36px; }
+        .calc-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--primary), #00cc6a); border: none; border-radius: 8px; color: var(--bg); font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: 'Inter', sans-serif; }
+        .calc-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3); }
+        .results { margin-top: 40px; padding: 40px; background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(255,0,128,0.1)); border: 1px solid var(--border); border-radius: 16px; }
+        .result-main { text-align: center; margin-bottom: 30px; }
+        .result-label { color: var(--dim); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+        .result-value { font-family: 'Space Grotesk', monospace; font-size: 3rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .result-item { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .result-item-label { color: var(--dim); font-size: 0.85rem; margin-bottom: 8px; }
+        .result-item-value { font-family: 'Space Grotesk', monospace; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .advice-box { background: rgba(0,0,0,0.3); border-left: 3px solid var(--primary); padding: 20px; margin-top: 30px; border-radius: 8px; }
+        .advice-box h3 { color: var(--primary); font-size: 1.1rem; margin-bottom: 10px; }
+        .advice-box p { color: var(--dim); line-height: 1.7; }
+        .related { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .related h3 { color: var(--text); margin-bottom: 20px; font-size: 1.3rem; }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .related-link { display: block; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: var(--text); transition: all 0.3s; }
+        .related-link:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .related-link span { display: block; font-size: 1.5rem; margin-bottom: 8px; }
+        footer { text-align: center; padding: 40px 20px; color: var(--dim); font-size: 0.9rem; margin-top: 60px; }
+        @media (max-width: 768px) { .calc-title { font-size: 2rem; } .result-value { font-size: 2rem; } .calc-content { padding: 25px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">← CalcHub</a>
+        </header>
+
+        <div class="ad-banner">📢 AD SPACE (728x90) - Add Google AdSense or Affiliate Links Here</div>
+
+        <div id="root"></div>
+
+        <div class="ad-banner">💡 POST-CALCULATOR AD (728x90) - Perfect for Investment App Affiliate Links</div>
+
+        <div class="related">
+            <h3>Related Calculators</h3>
+            <div class="related-grid">
+                <a href="investment-calculator.html" class="related-link"><span>📈</span>Investment Growth Calculator</a>
+                <a href="fire-calculator.html" class="related-link"><span>🔥</span>FIRE Calculator</a>
+                <a href="salary-increase-calculator.html" class="related-link"><span>💼</span>Salary Increase Calculator</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>All calculators are for educational purposes. Not financial advice.</p>
+            <p>© 2026 CalcHub</p>
+        </footer>
+    </div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function NetWorthCalculator() {
+            const [i, setI] = useState({ age: '', savings: '', monthly: '', rate: '7', target: '65' });
+            const [r, setR] = useState(null);
+            
+            const calc = () => {
+                const years = parseInt(i.target) - parseInt(i.age);
+                const mr = parseFloat(i.rate) / 100 / 12;
+                const months = years * 12;
+                const fv = parseFloat(i.savings) * Math.pow(1 + mr, months) + parseFloat(i.monthly) * ((Math.pow(1 + mr, months) - 1) / mr);
+                const contrib = parseFloat(i.savings) + parseFloat(i.monthly) * months;
+                setR({ fv, contrib, interest: fv - contrib, years });
+            };
+            
+            return (<>
+                <div className="calc-header">
+                    <h1 className="calc-title">💰 Net Worth Projection Calculator</h1>
+                    <p className="calc-subtitle">See the power of compound interest over time</p>
+                </div>
+                
+                <div className="calc-content">
+                    <div className="input-group">
+                        <label>Your Current Age</label>
+                        <input type="number" value={i.age} onChange={e => setI({...i, age: e.target.value})} placeholder="25" />
+                    </div>
+                    
+                    <div className="input-group">
+                        <label>Current Savings</label>
+                        <div className="input-wrapper">
+                            <span className="prefix">$</span>
+                            <input type="number" className="with-prefix" value={i.savings} onChange={e => setI({...i, savings: e.target.value})} placeholder="5000" />
+                        </div>
+                    </div>
+                    
+                    <div className="input-group">
+                        <label>Monthly Savings</label>
+                        <div className="input-wrapper">
+                            <span className="prefix">$</span>
+                            <input type="number" className="with-prefix" value={i.monthly} onChange={e => setI({...i, monthly: e.target.value})} placeholder="500" />
+                        </div>
+                    </div>
+                    
+                    <div className="input-group">
+                        <label>Expected Annual Return (%)</label>
+                        <input type="number" step="0.1" value={i.rate} onChange={e => setI({...i, rate: e.target.value})} placeholder="7" />
+                    </div>
+                    
+                    <div className="input-group">
+                        <label>Target Age</label>
+                        <input type="number" value={i.target} onChange={e => setI({...i, target: e.target.value})} placeholder="65" />
+                    </div>
+                    
+                    <button className="calc-btn" onClick={calc}>Calculate My Net Worth</button>
+                    
+                    {r && <div className="results">
+                        <div className="result-main">
+                            <div className="result-label">Your Projected Net Worth</div>
+                            <div className="result-value">${r.fv.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
+                            <div className="result-label">at age {i.target}</div>
+                        </div>
+                        
+                        <div className="result-grid">
+                            <div className="result-item">
+                                <div className="result-item-label">You Contributed</div>
+                                <div className="result-item-value">${r.contrib.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
+                            </div>
+                            <div className="result-item">
+                                <div className="result-item-label">Interest Earned</div>
+                                <div className="result-item-value">${r.interest.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
+                            </div>
+                            <div className="result-item">
+                                <div className="result-item-label">Time Horizon</div>
+                                <div className="result-item-value">{r.years} years</div>
+                            </div>
+                        </div>
+                        
+                        <div className="advice-box">
+                            <h3>💡 Key Insight</h3>
+                            <p>Your money will {(r.fv/r.contrib).toFixed(1)}x through compound interest! Starting early is the single most powerful wealth-building tool. The earlier you start investing, the more time your money has to grow exponentially.</p>
+                        </div>
+                    </div>}
+                </div>
+            </>);
+        }
+
+        ReactDOM.render(<NetWorthCalculator />, document.getElementById('root'));
+    </script>
+</body>
+</html>
